@@ -180,8 +180,8 @@ class logo2gcode():
         
     def show_help(self):
         s = '''  
-        Supported commands: home,cs,lt,rt,fd,bk,setx,sety,setxy,arc
-        Current pos:x=%f,y=%f,z=%f,heading=%f
+cmd list: home,cs,lt,rt,fd,bk,setx,sety,setxy,arc,setuph,setdownh,reset
+Current pos:x=%f,y=%f,z=%f,heading=%f
         ''' % (self.x,self.y,self.z,self.heading)
         print(s)
     #----------------------------------------------------------------
