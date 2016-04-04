@@ -7,6 +7,8 @@
 #----------------------------------------------------------
 # v0.1
 # * initial checkin
+# v0.2
+# * added setuph,setdownh,reset command support
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -21,7 +23,16 @@ class logo2gcode():
         self.fd.write("\r\n\r\n")
         time.sleep(2)   # Wait for grbl to initialize 
         self.fd.flushInput()
-        self.fd.write("G21\r\n")        
+        self.fd.write("G21\r\n")
+
+        # It's for my CNC, please update it
+        self.send_cmd_to_grbl("$0=80")
+        self.send_cmd_to_grbl("$1=266.6666")
+        self.send_cmd_to_grbl("$2=160")
+        
+        # b7 -- z dir, b6 -- y dir, b5 -- x dir
+        self.send_cmd_to_grbl("$6=32")
+        
         
         self.x = 0
         self.y = 0
@@ -165,7 +176,8 @@ class logo2gcode():
         
     def setx(self, x):
         self.setxyz(x, self.y, self.z)
-    
+
+        
     def show_help(self):
         s = '''  
         Supported commands: home,cs,lt,rt,fd,bk,setx,sety,setxy,arc
@@ -201,6 +213,7 @@ class logo2gcode():
                 self.set_heading(f)
 
             elif line2[0] == 'cs' or line2[0] == 'cleanscreen' or line2[0] == 'home':
+                self.penup()
                 self.setxy(0,0)
                 self.heading = 0
                 
@@ -218,6 +231,10 @@ class logo2gcode():
                 f = float(line2[1].strip())
                 self.sety(f)
 
+            elif line2[0] == 'setz':
+                f = float(line2[1].strip())
+                self.setz(f)
+                
             elif line2[0] == 'setxy':
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
@@ -227,6 +244,19 @@ class logo2gcode():
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
                 self.arc(f1,f2)
+
+            elif line2[0] == 'reset':
+                self.x = 0
+                self.y = 0
+                self.z = 0
+                
+            elif line2[0] == 'setuph':
+                f = float(line2[1].strip())
+                self.penup_height = f
+
+            elif line2[0] == 'setdownh':
+                f = float(line2[1].strip())
+                self.pendown_height = f
 
             elif line2[0] == 'help':
                 self.show_help()
