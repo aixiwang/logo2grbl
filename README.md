@@ -6,8 +6,8 @@ Usage:<br>
 python logo2grbl.py serial_port up_height down_height arc_min_len
 </code></pre>
 
-Anytime, you can press enter to show current x,y,z and heading information.
-you can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/
+Anytime, you can press enter to show current x,y,z and heading information.<br>
+You can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/
 
 <pre><code>
 #----------------------------------------------------------
