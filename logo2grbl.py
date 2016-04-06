@@ -9,6 +9,10 @@
 # * initial checkin
 # v0.2
 # * added setuph,setdownh,reset command support
+# v0.3
+# * added rect command
+# * added gcode_save_to_file parameter (you can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/)
+# * added serial emulation mode support when no available serial port exits
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -17,13 +21,19 @@ import serial
 import time
 
 class logo2gcode():
-    def __init__(self, fd=sys.stdout,penup_height = 5,pendown_height = -5,arc_min_lenth = 1,ratio=1):
+    def __init__(self, fd=sys.stdout,penup_height = 5,pendown_height = -5,arc_min_lenth = 1,ratio=1, gcode_save_to_file = True):
         self.fd = fd
+        self.gcode_fd = None
+        
         #set units to millimeters
-        self.fd.write("\r\n\r\n")
+        if gcode_save_to_file:
+            gcode_fd = open('gcode.txt','w')
+            self.gcode_fd = gcode_fd
+            
+        self.write_gcode("\r\n\r\n")
         time.sleep(2)   # Wait for grbl to initialize 
-        self.fd.flushInput()
-        self.fd.write("G21\r\n")
+        #self.fd.flushInput()
+        self.write_gcode("G21\r\n")
 
         # It's for my CNC, please update it
         self.send_cmd_to_grbl("$0=80")
@@ -44,13 +54,24 @@ class logo2gcode():
         self.is_pen_down = False
         self.arc_min_lenth = arc_min_lenth
         self.up()
-
+    
+    def write_gcode(self,gcode):
+        if self.gcode_fd != None and gcode[0] != '$' and gcode != '\r\n' and gcode != '\r' and gcode != '\n':
+            self.gcode_fd.write(gcode)
+            self.gcode_fd.flush()
+        
+        if self.fd != None:
+            self.fd.write(gcode)
+            self.fd.flush()
+        
     def send_cmd_to_grbl(self,line):
         l = line.strip() # Strip all EOL characters for consistency
-        print 'Sending: ' + l,
-        self.fd.write(l + '\n') # Send g-code block to grbl
-        grbl_out = self.fd.readline() # Wait for grbl response with carriage return
-        print ' : ' + grbl_out.strip()
+        print 'Sending: ' + line
+        self.write_gcode(l + '\n') # Send g-code block to grbl
+        
+        if self.fd != None:
+            grbl_out = self.fd.readline() # Wait for grbl response with carriage return
+            print ' : ' + grbl_out.strip()
     
     
     def load_file(self,fname):
@@ -90,12 +111,13 @@ class logo2gcode():
     def end(self):
         t.up()
         gcode = "M0"
-        self.fd.write(gcode)
+        self.send_cmd_to_grbl(gcode)
 
     def set_heading(self, heading):
         self.heading = heading
         self.heading %= 360        
 
+        
     #-------------------------------------------------------------
     # for gcode mapping
     def forward(self, distance):
@@ -134,7 +156,24 @@ class logo2gcode():
         self.setxy(old_x,old_y)
         if old_pen_down == True:
             self.down()
-                
+
+    def rect(self,x_delta,y_delta):
+        print('rect x_delta=%f,y_delta=%f' %(x_delta,y_delta))
+        old_pen_down = self.is_pen_down
+        old_x = self.x
+        old_y = self.y
+        
+        self.down()
+        self.setx(old_x + x_delta)
+        self.sety(old_y + y_delta)
+        self.setx(old_x)
+        self.sety(old_y)
+        
+        if old_pen_down == True:
+            self.down()
+        else:
+            self.up()
+        
     def right(self, angle):
         self.heading += angle
         self.heading %= 360
@@ -180,7 +219,7 @@ class logo2gcode():
         
     def show_help(self):
         s = '''  
-cmd list: home,cs,lt,rt,fd,bk,setx,sety,setxy,arc,setuph,setdownh,reset
+cmd list: home,cs,lt,rt,fd,bk,setx,sety,setxy,arc,setuph,setdownh,reset,rect
 Current pos:x=%f,y=%f,z=%f,heading=%f
         ''' % (self.x,self.y,self.z,self.heading)
         print(s)
@@ -244,7 +283,12 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
                 self.arc(f1,f2)
-
+                
+            elif line2[0] == 'rect':
+                f1 = float(line2[1].strip())
+                f2 = float(line2[2].strip())                
+                self.rect(f1,f2)
+                
             elif line2[0] == 'reset':
                 self.x = 0
                 self.y = 0
@@ -277,9 +321,13 @@ if __name__ == '__main__':
     f3 = float(sys.argv[4])
     print('serial_port=%s, up_height=%f, down_height=%f, arc_min_len=%f' %(serial_port,f1,f2,f3))
     
-    s = serial.Serial(serial_port,9600)
-    t = logo2gcode(s,f1,f2,f3)
-    
+    try:
+        s = serial.Serial(serial_port,9600)
+        t = logo2gcode(s,f1,f2,f3,True)
+    except:
+        print('open serial fail! enable emulation mode')
+        t = logo2gcode(None,f1,f2,f3,True)
+        
     while True:
         s = raw_input(':>')
         t.lines = s.split('\n')
