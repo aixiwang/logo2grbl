@@ -1,0 +1,54 @@
+home
+penup
+parc 360 4 0.3
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+
+arc 360 16

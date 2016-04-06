@@ -15,6 +15,10 @@
 # * added serial emulation mode support when no available serial port exits
 # v0.4
 # * added pocketrect,pocketarc command
+# v0.5
+# * changed pocketrect,pocketarc name to prect & parc
+# * redefined rect and prect function
+# * added BATCH mode support
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -164,12 +168,21 @@ class logo2gcode():
         old_pen_down = self.is_pen_down
         old_x = self.x
         old_y = self.y
+        old_heading = self.heading
         
         self.down()
-        self.setx(old_x + x_delta)
-        self.sety(old_y + y_delta)
+        self.forward(x_delta)
+        self.left(90)
+        self.forward(y_delta)
+        self.left(90)
+        self.forward(x_delta)
+        self.left(90)
+        self.forward(y_delta)
+
+        self.up()
         self.setx(old_x)
         self.sety(old_y)
+        self.set_heading(old_heading)
         
         if old_pen_down == True:
             self.down()
@@ -179,11 +192,11 @@ class logo2gcode():
     def pocketrect(self,x_delta,y_delta,step_x,step_y):
         old_x = self.x
         old_y = self.y
+        old_heading = self.heading
         self.up()
         
         new_delta_x = x_delta
         new_delta_y = y_delta
-
         
         if x_delta == 0 or y_delta == 0:
             print('invalid x_delta or y_delta value')
@@ -203,8 +216,12 @@ class logo2gcode():
             self.rect(new_delta_x,new_delta_y)
 
             self.up()
-            self.setxy(self.x + step_x2,self.y + step_y2)        
- 
+            #self.setxy(self.x + step_x2,self.y + step_y2)        
+            self.forward(step_x2)
+            self.left(90)
+            self.forward(step_y2)
+            self.right(90)
+            
             flag1 = 0
             if x_delta > 0 and new_delta_x <= 0:
                 flag1 += 1
@@ -227,7 +244,8 @@ class logo2gcode():
                 break
             
         self.setxy(old_x,old_y)
-
+        self.set_heading(old_heading)
+        
     def pocketarc(self,angle,r,step_r):
         old_x = self.x
         old_y = self.y
@@ -365,14 +383,14 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 f2 = float(line2[2].strip())                
                 self.rect(f1,f2)
 
-            elif line2[0] == 'pocketrect':
+            elif line2[0] == 'prect':
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
                 f3 = float(line2[3].strip())
                 f4 = float(line2[4].strip())                
                 self.pocketrect(f1,f2,f3,f4)
     
-            elif line2[0] == 'pocketarc':
+            elif line2[0] == 'parc':
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
                 f3 = float(line2[3].strip())               
@@ -400,15 +418,27 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 
                 
 if __name__ == '__main__':
-    if len(sys.argv) != 5:
-        print('Usage: python logo2grbl.py serial_port up_height down_height arc_min_len')
+    if len(sys.argv) != 6 and len(sys.argv) != 7:
+        print('Usage: python logo2grbl.py CLI serial_port up_height down_height arc_min_len')
+        print('Usage: python logo2grbl.py BATCH script_file serial_port up_height down_height arc_min_len')
         sys.exit(1)
 
-    serial_port = sys.argv[1]        
-    f1 = float(sys.argv[2])
-    f2 = float(sys.argv[3])
-    f3 = float(sys.argv[4])
-    print('serial_port=%s, up_height=%f, down_height=%f, arc_min_len=%f' %(serial_port,f1,f2,f3))
+    run_mode = sys.argv[1]
+    if run_mode == 'CLI' and len(sys.argv) == 6:
+        serial_port = sys.argv[2]
+        f1 = float(sys.argv[3])
+        f2 = float(sys.argv[4])
+        f3 = float(sys.argv[5])
+        print('CLI mode,serial_port=%s, up_height=%f, down_height=%f, arc_min_len=%f' %(serial_port,f1,f2,f3))
+
+    elif run_mode == 'BATCH' and len(sys.argv) == 7:
+        script_file = sys.argv[2]
+        serial_port = sys.argv[3]
+        f1 = float(sys.argv[4])
+        f2 = float(sys.argv[5])
+        f3 = float(sys.argv[6])
+        print('BATCH mode,serial_port=%s, up_height=%f, down_height=%f, arc_min_len=%f' %(serial_port,f1,f2,f3))
+    
     
     try:
         s = serial.Serial(serial_port,9600)
@@ -416,13 +446,19 @@ if __name__ == '__main__':
     except:
         print('open serial fail! enable emulation mode')
         t = logo2gcode(None,f1,f2,f3,True)
-        
-    while True:
-        s = raw_input(':>')
-        t.lines = s.split('\n')
+    
+    if run_mode == 'CLI':
+        while True:
+            s = raw_input(':>')
+            t.lines = s.split('\n')
+            try:
+                t.translate(t.lines)
+            except Exception as e:
+                print('Invalid command line, exception:' + str(e))
+    else:
+        f = open(script_file,'r')
+        t.lines = f.readlines()
         try:
             t.translate(t.lines)
-        except:
-            print('Invalid command line,please input again!')
-            
-
+        except Exception as e:
+            print('Invalid command line, exception:' + str(e))
