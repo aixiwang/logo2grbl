@@ -13,6 +13,8 @@
 # * added rect command
 # * added gcode_save_to_file parameter (you can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/)
 # * added serial emulation mode support when no available serial port exits
+# v0.4
+# * added pocketrect,pocketarc command
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -173,6 +175,80 @@ class logo2gcode():
             self.down()
         else:
             self.up()
+
+    def pocketrect(self,x_delta,y_delta,step_x,step_y):
+        old_x = self.x
+        old_y = self.y
+        self.up()
+        
+        new_delta_x = x_delta
+        new_delta_y = y_delta
+
+        
+        if x_delta == 0 or y_delta == 0:
+            print('invalid x_delta or y_delta value')
+            return
+            
+        if x_delta > 0:
+            step_x2 = abs(step_x)
+        else:
+            step_x2 = (-1)*abs(step_x)
+            
+        if y_delta > 0:
+            step_y2 = abs(step_y)
+        else:
+            step_y2 = (-1)*abs(step_y)
+        
+        while True:
+            self.rect(new_delta_x,new_delta_y)
+
+            self.up()
+            self.setxy(self.x + step_x2,self.y + step_y2)        
+ 
+            flag1 = 0
+            if x_delta > 0 and new_delta_x <= 0:
+                flag1 += 1
+                
+            elif x_delta < 0 and new_delta_x >= 0:
+                flag1 += 1
+            
+            else:
+                new_delta_x -= step_x2*2
+            
+            if y_delta > 0 and new_delta_y <= 0:
+                flag1 += 1
+
+            elif y_delta < 0 and new_delta_y >= 0:
+                flag1 += 1
+            else:
+                new_delta_y -= step_y2*2
+            
+            if flag1 >= 1:
+                break
+            
+        self.setxy(old_x,old_y)
+
+    def pocketarc(self,angle,r,step_r):
+        old_x = self.x
+        old_y = self.y
+        old_heading = self.heading
+        self.up()
+        
+        new_r = r
+        new_x = self.x
+        new_y = self.y
+        
+        if angle <= 0 or step_r <= 0 or r <= 0:
+            print('invalid parameter')
+            return
+            
+        while True:
+            self.arc(angle,new_r)
+            new_r = new_r - step_r*2
+            if (new_r) <= 0:
+                break
+            
+        self.setxy(old_x,old_y)
         
     def right(self, angle):
         self.heading += angle
@@ -288,6 +364,19 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
                 self.rect(f1,f2)
+
+            elif line2[0] == 'pocketrect':
+                f1 = float(line2[1].strip())
+                f2 = float(line2[2].strip())                
+                f3 = float(line2[3].strip())
+                f4 = float(line2[4].strip())                
+                self.pocketrect(f1,f2,f3,f4)
+    
+            elif line2[0] == 'pocketarc':
+                f1 = float(line2[1].strip())
+                f2 = float(line2[2].strip())                
+                f3 = float(line2[3].strip())               
+                self.pocketarc(f1,f2,f3)
                 
             elif line2[0] == 'reset':
                 self.x = 0
