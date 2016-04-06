@@ -33,6 +33,7 @@ You can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/
 # * changed pocketrect,pocketarc name to prect & parc
 # * redefined rect and prect function
 # * added BATCH mode support
+# * added comment support('#')
 
 </code></pre>
 
