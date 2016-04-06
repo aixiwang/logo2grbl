@@ -19,6 +19,7 @@
 # * changed pocketrect,pocketarc name to prect & parc
 # * redefined rect and prect function
 # * added BATCH mode support
+# * added comment support('#')
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -321,9 +322,13 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
     def translate(self, lines):
         for line in lines:
             #print('line:',line)
+            if line[0] == '#':
+                continue
+                
             line = line.strip()
             line = line.lower()
             line2 = line.split(' ')
+            
 
             if line2[0] == 'fd' or line2[0] == 'forward':
                 f = float(line2[1].strip())
