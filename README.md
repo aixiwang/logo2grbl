@@ -3,7 +3,13 @@ A command line tool to translate LOGO instruction to GRBL serial command
 
 Usage:<br>
 <pre><code>
-python logo2grbl.py serial_port up_height down_height arc_min_len
+python logo2grbl.py CLI serial_port up_height down_height arc_min_len
+python logo2grbl.py BATCH script_file serial_port up_height down_height arc_min_len
+
+Examples:
+python logo2grbl.py CLI COM3 5 -3 1
+python logo2grbl.py BATCH logo.txt COM3 5 -3 1
+
 </code></pre>
 
 Anytime, you can press enter to show current x,y,z and heading information.<br>
