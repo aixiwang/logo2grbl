@@ -420,5 +420,9 @@ if __name__ == '__main__':
     while True:
         s = raw_input(':>')
         t.lines = s.split('\n')
-        t.translate(t.lines)    
+        try:
+            t.translate(t.lines)
+        except:
+            print('Invalid command line,please input again!')
+            
 
