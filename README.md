@@ -37,3 +37,62 @@ You can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/
 
 </code></pre>
 
+logo sample file
+<pre><code>
+home
+penup
+# cut out inner circle
+parc 360 4 0.3
+
+# cut out 8 rect
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+rt 45
+fd 10
+prect 6 1.25 0.3 0.3
+prect 6 -1.25 0.3 0.3
+fd -10
+
+# cut out outer circle finally
+arc 360 16
+</code></pre>
