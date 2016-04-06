@@ -23,5 +23,10 @@ You can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/
 # * added serial emulation mode support when no available serial port exits
 # v0.4
 # * added pocketrect,pocketarc command
+# v0.5
+# * changed pocketrect,pocketarc name to prect & parc
+# * redefined rect and prect function
+# * added BATCH mode support
+
 </code></pre>
 
