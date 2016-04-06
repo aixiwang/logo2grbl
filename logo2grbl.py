@@ -313,7 +313,7 @@ class logo2gcode():
         
     def show_help(self):
         s = '''  
-cmd list: home,cs,lt,rt,fd,bk,setx,sety,setxy,arc,setuph,setdownh,reset,rect
+cmd list: home,cs,lt,rt,fd,bk,setx,sety,setxy,arc,setuph,setdownh,reset,rect,prect,parc
 Current pos:x=%f,y=%f,z=%f,heading=%f
         ''' % (self.x,self.y,self.z,self.heading)
         print(s)
