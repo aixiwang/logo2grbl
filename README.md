@@ -21,5 +21,7 @@ you can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/
 # * added rect command
 # * added gcode_save_to_file parameter (you can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/)
 # * added serial emulation mode support when no available serial port exits
+# v0.4
+# * added pocketrect,pocketarc command
 </code></pre>
 
