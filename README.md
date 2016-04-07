@@ -13,7 +13,7 @@ python logo2grbl.py BATCH logo.txt COM3 5 -3 1
 </code></pre>
 
 Anytime, you can press enter to show current x,y,z and heading information.<br>
-You can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/
+You can view generated gcode.txt with http://jherrm.com/gcode-viewer/
 
 <pre><code>
 #----------------------------------------------------------
