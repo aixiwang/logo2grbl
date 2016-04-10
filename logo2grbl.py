@@ -20,6 +20,10 @@
 # * redefined rect and prect function
 # * added BATCH mode support
 # * added comment support('#')
+# v0.6
+# * added feedrate init
+# * fixed rect, prect direction issue
+#
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -38,14 +42,21 @@ class logo2gcode():
             self.gcode_fd = gcode_fd
             
         self.write_gcode("\r\n\r\n")
-        time.sleep(2)   # Wait for grbl to initialize 
-        #self.fd.flushInput()
+        time.sleep(2)   # Wait for grbl to initialize
+        try:
+            self.fd.flushInput()
+        except:
+            print('Flush gcode_fd exception.')
+            pass
         self.write_gcode("G21\r\n")
 
         # It's for my CNC, please update it
         self.send_cmd_to_grbl("$0=80")
         self.send_cmd_to_grbl("$1=266.6666")
         self.send_cmd_to_grbl("$2=160")
+        
+        # init feedrate
+        self.send_cmd_to_grbl("$4=60")
         
         # b7 -- z dir, b6 -- y dir, b5 -- x dir
         self.send_cmd_to_grbl("$6=32")
@@ -63,6 +74,7 @@ class logo2gcode():
         self.up()
     
     def write_gcode(self,gcode):
+        print 'Sending: ' + gcode
         if self.gcode_fd != None and gcode[0] != '$' and gcode != '\r\n' and gcode != '\r' and gcode != '\n':
             self.gcode_fd.write(gcode)
             self.gcode_fd.flush()
@@ -72,15 +84,13 @@ class logo2gcode():
             self.fd.flush()
         
     def send_cmd_to_grbl(self,line):
-        l = line.strip() # Strip all EOL characters for consistency
-        print 'Sending: ' + line
+        l = line.strip() # Strip all EOL characters for consistency  
         self.write_gcode(l + '\n') # Send g-code block to grbl
         
         if self.fd != None:
             grbl_out = self.fd.readline() # Wait for grbl response with carriage return
             print ' : ' + grbl_out.strip()
-    
-    
+
     def load_file(self,fname):
         f = open(fname, 'r')
         self.lines = f.readlines()
@@ -128,8 +138,8 @@ class logo2gcode():
     #-------------------------------------------------------------
     # for gcode mapping
     def forward(self, distance):
-        new_x = self.x + distance * math.sin(math.radians(self.heading))
         new_y = self.y + distance * math.cos(math.radians(self.heading))
+        new_x = self.x + distance * math.sin(math.radians(self.heading))
         self.setxy(new_x, new_y)
 
     def arc(self, angle, r):
@@ -172,13 +182,13 @@ class logo2gcode():
         old_heading = self.heading
         
         self.down()
-        self.forward(x_delta)
-        self.left(90)
         self.forward(y_delta)
-        self.left(90)
+        self.right(90)
         self.forward(x_delta)
-        self.left(90)
+        self.right(90)
         self.forward(y_delta)
+        self.right(90)
+        self.forward(x_delta)
 
         self.up()
         self.setx(old_x)
@@ -218,10 +228,10 @@ class logo2gcode():
 
             self.up()
             #self.setxy(self.x + step_x2,self.y + step_y2)        
-            self.forward(step_x2)
-            self.left(90)
             self.forward(step_y2)
             self.right(90)
+            self.forward(step_x2)
+            self.left(90)
             
             flag1 = 0
             if x_delta > 0 and new_delta_x <= 0:
@@ -414,6 +424,7 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 f = float(line2[1].strip())
                 self.pendown_height = f
 
+                
             elif line2[0] == 'help':
                 self.show_help()
             
@@ -460,6 +471,8 @@ if __name__ == '__main__':
                 t.translate(t.lines)
             except Exception as e:
                 print('Invalid command line, exception:' + str(e))
+                t.show_help()
+                
     else:
         f = open(script_file,'r')
         t.lines = f.readlines()
@@ -467,3 +480,4 @@ if __name__ == '__main__':
             t.translate(t.lines)
         except Exception as e:
             print('Invalid command line, exception:' + str(e))
+            t.show_help()
