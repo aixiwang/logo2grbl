@@ -34,6 +34,9 @@ You can view generated gcode.txt with http://jherrm.com/gcode-viewer/
 # * redefined rect and prect function
 # * added BATCH mode support
 # * added comment support('#')
+# v0.6
+# * added feedrate init
+# * fixed rect, prect direction issue
 
 </code></pre>
 
