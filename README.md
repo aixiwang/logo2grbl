@@ -50,50 +50,50 @@ parc 360 4 0.3
 # cut out 8 rect
 rt 45
 fd 10
-prect 6 1.25 0.3 0.3
-prect 6 -1.25 0.3 0.3
+prect 1.25 6 0.3 0.3
+prect -1.25 6 0.3 0.3
 fd -10
 
 rt 45
 fd 10
-prect 6 1.25 0.3 0.3
-prect 6 -1.25 0.3 0.3
+prect 1.25 6 0.3 0.3
+prect -1.25 6 0.3 0.3
 fd -10
 
 rt 45
 fd 10
-prect 6 1.25 0.3 0.3
-prect 6 -1.25 0.3 0.3
+prect 1.25 6 0.3 0.3
+prect -1.25 6 0.3 0.3
 fd -10
 
 rt 45
 fd 10
-prect 6 1.25 0.3 0.3
-prect 6 -1.25 0.3 0.3
+prect 1.25 6 0.3 0.3
+prect -1.25 6 0.3 0.3
 fd -10
 
 rt 45
 fd 10
-prect 6 1.25 0.3 0.3
-prect 6 -1.25 0.3 0.3
+prect 1.25 6 0.3 0.3
+prect -1.25 6 0.3 0.3
 fd -10
 
 rt 45
 fd 10
-prect 6 1.25 0.3 0.3
-prect 6 -1.25 0.3 0.3
+prect 1.25 6 0.3 0.3
+prect -1.25 6 0.3 0.3
 fd -10
 
 rt 45
 fd 10
-prect 6 1.25 0.3 0.3
-prect 6 -1.25 0.3 0.3
+prect 1.25 6 0.3 0.3
+prect -1.25 6 0.3 0.3
 fd -10
 
 rt 45
 fd 10
-prect 6 1.25 0.3 0.3
-prect 6 -1.25 0.3 0.3
+prect 1.25 6 0.3 0.3
+prect -1.25 6 0.3 0.3
 fd -10
 
 # cut out outer circle finally
