@@ -15,32 +15,6 @@ python logo2grbl.py BATCH logo.txt COM3 5 -3 1
 Anytime, you can press enter to show current x,y,z and heading information.<br>
 You can view generated gcode.txt with http://jherrm.com/gcode-viewer/
 
-<pre><code>
-#----------------------------------------------------------
-# Revision History
-#----------------------------------------------------------
-# v0.1
-# * initial checkin
-# v0.2
-# * added setuph,setdownh,reset command support
-# v0.3
-# * added rect command
-# * added gcode_save_to_file parameter (you can reivew generated gcode.txt with http://jherrm.com/gcode-viewer/)
-# * added serial emulation mode support when no available serial port exits
-# v0.4
-# * added pocketrect,pocketarc command
-# v0.5
-# * changed pocketrect,pocketarc name to prect & parc
-# * redefined rect and prect function
-# * added BATCH mode support
-# * added comment support('#')
-# v0.6
-# * added feedrate init
-# * fixed rect, prect direction issue
-# * added feedrate command
-# * fixed multple blankspace issue
-
-</code></pre>
 
 logo sample file
 <pre><code>
