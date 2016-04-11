@@ -37,6 +37,8 @@ You can view generated gcode.txt with http://jherrm.com/gcode-viewer/
 # v0.6
 # * added feedrate init
 # * fixed rect, prect direction issue
+# * added feedrate command
+# * fixed multple blankspace issue
 
 </code></pre>
 
