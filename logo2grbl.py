@@ -23,7 +23,8 @@
 # v0.6
 # * added feedrate init
 # * fixed rect, prect direction issue
-#
+# * added feedrate command
+# * fixed multple blankspace issue
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -321,6 +322,9 @@ class logo2gcode():
     def setx(self, x):
         self.setxyz(x, self.y, self.z)
 
+    def feedrate(self, x):
+        s = '$4=' + str(x)
+        self.send_cmd_to_grbl(s)
         
     def show_help(self):
         s = '''  
@@ -334,12 +338,22 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
             #print('line:',line)
             if line[0] == '#':
                 continue
-                
-            line = line.strip()
+            
+            line = line.replace('\t',' ')
+            
+            last_lens = len(line)
+            new_lens = last_lens
+            while True:                
+                line = line.replace('  ',' ')
+                last_lens = new_lens
+                new_lens = len(line)
+                #print(last_lens,new_lens)
+                if last_lens == new_lens:
+                    break
+                    
             line = line.lower()
             line2 = line.split(' ')
-            
-
+                        
             if line2[0] == 'fd' or line2[0] == 'forward':
                 f = float(line2[1].strip())
                 self.forward(f)
@@ -424,15 +438,17 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 f = float(line2[1].strip())
                 self.pendown_height = f
 
-                
+            elif line2[0] == 'feedrate':
+                f = float(line2[1].strip())
+                self.feedrate(f)
+
             elif line2[0] == 'help':
                 self.show_help()
             
             else:
                 print('Invalid command')
                 self.show_help()
-                
-                
+
 if __name__ == '__main__':
     if len(sys.argv) != 6 and len(sys.argv) != 7:
         print('Usage: python logo2grbl.py CLI serial_port up_height down_height arc_min_len')
@@ -454,7 +470,6 @@ if __name__ == '__main__':
         f2 = float(sys.argv[5])
         f3 = float(sys.argv[6])
         print('BATCH mode,serial_port=%s, up_height=%f, down_height=%f, arc_min_len=%f' %(serial_port,f1,f2,f3))
-    
     
     try:
         s = serial.Serial(serial_port,9600)
