@@ -24,7 +24,7 @@
 # * added feedrate init
 # * fixed rect, prect direction issue
 # * added feedrate command
-# * fixed multple blankspace issue
+# * fixed multiple blankspace issue
 #-------------------------------------------------------------------------------------------
 
 import math
