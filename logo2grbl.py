@@ -25,6 +25,9 @@
 # * fixed rect, prect direction issue
 # * added feedrate command
 # * fixed multiple blankspace issue
+# v0.7
+# * added rungcode command
+# * added send_cmd_to_grbl response checking
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -90,7 +93,11 @@ class logo2gcode():
         
         if self.fd != None:
             grbl_out = self.fd.readline() # Wait for grbl response with carriage return
-            print ' : ' + grbl_out.strip()
+            if grbl_out.strip() == 'OK':
+                print ' : ' + grbl_out.strip()
+            else:
+                print('invalid response')
+                s = raw_input('any key to continue or ctr + c to exit!')
 
     def load_file(self,fname):
         f = open(fname, 'r')
@@ -442,6 +449,17 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 f = float(line2[1].strip())
                 self.feedrate(f)
 
+            elif line2[0] == 'rungcode':
+                s = str(line2[1].strip())
+                f = open(s,'r')
+                lines = f.readlines()
+                print('rungcode started!')
+                
+                for line in lines:
+                    self.send_cmd_to_grbl(line)
+                    
+                print('rungcode done!')
+                
             elif line2[0] == 'help':
                 self.show_help()
             
