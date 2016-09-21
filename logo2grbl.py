@@ -28,6 +28,10 @@
 # v0.7
 # * added rungcode command
 # * added send_cmd_to_grbl response checking
+# v0.8
+# * added e,c,s,f command
+# * added manual training & log function
+
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -35,17 +39,27 @@ import sys
 import serial
 import time
 
+run_mode = 'CLI'
+global run_mode
+
 class logo2gcode():
     def __init__(self, fd=sys.stdout,penup_height = 5,pendown_height = -5,arc_min_lenth = 1,ratio=1, gcode_save_to_file = True):
+        global run_mode    
         self.fd = fd
         self.gcode_fd = None
-        
+        self.logo_fd = None
+        self.write_logo_flag = False
         #set units to millimeters
         if gcode_save_to_file:
             gcode_fd = open('gcode.txt','w')
             self.gcode_fd = gcode_fd
+            self.write_gcode("\r\n\r\n")
+
+        if run_mode == 'CLI':
+            logo_fd = open('logo_manual.txt','w')
+            self.logo_fd = logo_fd
+
             
-        self.write_gcode("\r\n\r\n")
         time.sleep(2)   # Wait for grbl to initialize
         try:
             self.fd.flushInput()
@@ -86,7 +100,12 @@ class logo2gcode():
         if self.fd != None:
             self.fd.write(gcode)
             self.fd.flush()
-        
+
+    def write_logo(self,logo_code):        
+        if self.logo_fd != None:
+            self.logo_fd.write(logo_code + '\r\n')
+            self.logo_fd.flush()
+            
     def send_cmd_to_grbl(self,line):
         l = line.strip() # Strip all EOL characters for consistency  
         self.write_gcode(l + '\n') # Send g-code block to grbl
@@ -335,12 +354,14 @@ class logo2gcode():
         
     def show_help(self):
         s = '''  
-cmd list: home,cs,lt,rt,fd,bk,setx,sety,setxy,arc,setuph,setdownh,reset,rect,prect,parc
+cmd list: penup,pendown,home,cs,lt,rt,fd,bk,setx,sety,setxy,arc,setuph,setdownh,reset,rect,prect,parc,feedrate,e,c,s,f,rungcode
 Current pos:x=%f,y=%f,z=%f,heading=%f
         ''' % (self.x,self.y,self.z,self.heading)
         print(s)
     #----------------------------------------------------------------
     def translate(self, lines):
+        global run_mode
+        
         for line in lines:
             #print('line:',line)
             if line[0] == '#':
@@ -359,15 +380,23 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                     break
                     
             line = line.lower()
+            line = line.rstrip('\r')
+            line = line.rstrip('\n')
+            line = line.rstrip('\r\n')
+            
+
             line2 = line.split(' ')
-                        
+
+
+            self.write_logo_flag = True                
+            
             if line2[0] == 'fd' or line2[0] == 'forward':
                 f = float(line2[1].strip())
                 self.forward(f)
-
+                
             elif line2[0] == 'bk' or line2[0] == 'backward':
                 f = float(line2[1].strip())
-                self.backward(f)
+                self.back(f)
 
             elif line2[0] == 'left' or line2[0] == 'lt':
                 f = float(line2[1].strip())
@@ -380,7 +409,7 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
             elif line2[0] == 'setheading' or line2[0] == 'seth':
                 f = float(line2[1].strip())
                 self.set_heading(f)
-
+                
             elif line2[0] == 'cs' or line2[0] == 'cleanscreen' or line2[0] == 'home':
                 self.penup()
                 self.setxy(0,0)
@@ -391,15 +420,15 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 
             elif line2[0] == 'penup':
                 self.penup()
-
+                
             elif line2[0] == 'setx':
                 f = float(line2[1].strip())
                 self.setx(f)
-
+                
             elif line2[0] == 'sety':
                 f = float(line2[1].strip())
                 self.sety(f)
-
+                
             elif line2[0] == 'setz':
                 f = float(line2[1].strip())
                 self.setz(f)
@@ -408,7 +437,7 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
                 self.setxy(f1,f2)
-
+                
             elif line2[0] == 'arc':
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
@@ -418,19 +447,19 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
                 self.rect(f1,f2)
-
+                
             elif line2[0] == 'prect':
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
                 f3 = float(line2[3].strip())
                 f4 = float(line2[4].strip())                
                 self.pocketrect(f1,f2,f3,f4)
-    
+                
             elif line2[0] == 'parc':
                 f1 = float(line2[1].strip())
                 f2 = float(line2[2].strip())                
                 f3 = float(line2[3].strip())               
-                self.pocketarc(f1,f2,f3)
+                self.pocketarc(f1,f2,f3)                
                 
             elif line2[0] == 'reset':
                 self.x = 0
@@ -440,15 +469,15 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
             elif line2[0] == 'setuph':
                 f = float(line2[1].strip())
                 self.penup_height = f
-
+                
             elif line2[0] == 'setdownh':
                 f = float(line2[1].strip())
                 self.pendown_height = f
-
+                
             elif line2[0] == 'feedrate':
                 f = float(line2[1].strip())
                 self.feedrate(f)
-
+                
             elif line2[0] == 'rungcode':
                 s = str(line2[1].strip())
                 f = open(s,'r')
@@ -456,16 +485,36 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
                 print('rungcode started!')
                 
                 for line in lines:
-                    self.send_cmd_to_grbl(line)
-                    
+                    self.send_cmd_to_grbl(line)       
                 print('rungcode done!')
+
+            elif line2[0] == 'e':
+                # y += 0.5
+                self.setxy(self.x,self.y + 0.5)
+                
+            elif line2[0] == 'c':
+                # y -= 0.5
+                self.setxy(self.x,self.y - 0.5)                
+            elif line2[0] == 's':
+                # x -= 0.5
+                self.setxy(self.x - 0.5,self.y)
+            elif line2[0] == 'f':
+                # x += 0.5
+                self.setxy(self.x + 0.5,self.y)
                 
             elif line2[0] == 'help':
                 self.show_help()
-            
+
             else:
-                print('Invalid command')
+                print('Invalid command:' + str(line2))
                 self.show_help()
+                self.write_logo_flag = False
+
+            if run_mode == 'CLI' and self.write_logo_flag == True:
+                #print 'run_mode:',run_mode,' logo_code:',line
+                self.write_logo(line)
+            
+            
 
 if __name__ == '__main__':
     if len(sys.argv) != 6 and len(sys.argv) != 7:
