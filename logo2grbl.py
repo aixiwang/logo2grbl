@@ -112,10 +112,13 @@ class logo2gcode():
         
         if self.fd != None:
             grbl_out = self.fd.readline() # Wait for grbl response with carriage return
-            if grbl_out.strip() == 'OK':
-                print ' : ' + grbl_out.strip()
+            #print 'grbl_out:', grbl_out
+            grbl_out = grbl_out.lower()
+            
+            if grbl_out.strip() == 'ok':
+                print(' : ' + grbl_out.strip())
             else:
-                print('invalid response')
+                print('invalid response:' + grbl_out)
                 s = raw_input('any key to continue or ctr + c to exit!')
 
     def load_file(self,fname):
@@ -501,6 +504,10 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
             elif line2[0] == 'f':
                 # x += 0.5
                 self.setxy(self.x + 0.5,self.y)
+            elif line2[0] == 'w':
+                self.setxyz(self.x,self.y,self.z+1)
+            elif line2[0] == 'r':
+                self.setxyz(self.x,self.y,self.z-1)
                 
             elif line2[0] == 'help':
                 self.show_help()
