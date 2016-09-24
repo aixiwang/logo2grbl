@@ -31,7 +31,12 @@
 # v0.8
 # * added e,c,s,f command
 # * added manual training & log function
-
+# v0.8
+# * added e,c,s,f command
+# * added manual training & log function
+# v0.9
+# * added w,r command
+# * fixed 'ok' error
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -113,8 +118,8 @@ class logo2gcode():
         if self.fd != None:
             grbl_out = self.fd.readline() # Wait for grbl response with carriage return
             print 'grbl_out:',grbl_out
-            
-            if grbl_out.strip() == 'OK':
+            grbl_out = grbl_out.lower()
+            if grbl_out.strip() == 'ok':
                 print ' : ' + grbl_out.strip()
             else:
                 print('invalid response')
@@ -356,7 +361,7 @@ class logo2gcode():
         
     def show_help(self):
         s = '''  
-cmd list: penup,pendown,home,cs,lt,rt,fd,bk,setx,sety,setz,setxy,arc,setuph,setdownh,reset,rect,prect,parc,feedrate,e,c,s,f,rungcode
+cmd list: penup,pendown,home,cs,lt,rt,fd,bk,setx,sety,setz,setxy,arc,setuph,setdownh,reset,rect,prect,parc,feedrate,e,c,s,f,w,r,rungcode
 Current pos:x=%f,y=%f,z=%f,heading=%f
         ''' % (self.x,self.y,self.z,self.heading)
         print(s)
@@ -503,6 +508,14 @@ Current pos:x=%f,y=%f,z=%f,heading=%f
             elif line2[0] == 'f':
                 # x += 0.5
                 self.setxy(self.x + 0.5,self.y)
+
+            elif line2[0] == 'w':
+                # x += 0.5
+                self.setz(self.z + 0.5)
+
+            elif line2[0] == 'r':
+                # x += 0.5
+                self.setz(self.z - 0.5)
                 
             elif line2[0] == 'help':
                 self.show_help()
