@@ -1,2 +1,2 @@
-python logo2grbl.py CLI COM4 5 -3 1
+c:\python27\python logo2grbl.py CLI COM5 5 -3 1
 pause
