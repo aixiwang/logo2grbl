@@ -1,0 +1,8 @@
+reset
+setz 0
+penup
+setxy 10 20
+arc 365 2.5
+penup
+home
+setz 0

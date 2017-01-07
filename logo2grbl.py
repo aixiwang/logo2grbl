@@ -37,6 +37,10 @@
 # v0.9
 # * added w,r command
 # * fixed 'ok' error
+# v0.10
+# * fixed penup issue
+# * removed initial penup command
+# * updated $6 parameter for io adaptor board
 #-------------------------------------------------------------------------------------------
 
 import math
@@ -77,12 +81,10 @@ class logo2gcode():
         self.send_cmd_to_grbl("$0=80")
         self.send_cmd_to_grbl("$1=266.6666")
         self.send_cmd_to_grbl("$2=160")
-        
         # init feedrate
-        self.send_cmd_to_grbl("$4=60")
-        
+        self.send_cmd_to_grbl("$4=120")
         # b7 -- z dir, b6 -- y dir, b5 -- x dir
-        self.send_cmd_to_grbl("$6=32")
+        self.send_cmd_to_grbl("$6=223")
         
         
         self.x = 0
@@ -94,7 +96,7 @@ class logo2gcode():
         self.ratio = ratio
         self.is_pen_down = False
         self.arc_min_lenth = arc_min_lenth
-        self.up()
+        #self.up()
     
     def write_gcode(self,gcode):
         print 'Sending: ' + gcode
@@ -325,14 +327,10 @@ class logo2gcode():
         self.forward(-distance)
 
     def penup(self):
-        if self.is_pen_down:
-            self.is_pen_down = False
-            self.up()
+        self.up()
 
     def pendown(self):
-        if not self.is_pen_down:
-            self.is_pen_down = True
-            self.down()
+        self.down()
 
     def left(self,angle):
         self.set_heading(self.heading - angle)
