@@ -1,0 +1,131 @@
+body{
+	font-family:Verdana;
+	background-color:#3D3D3D;
+	
+}
+h1{
+	font-size:12pt;
+	}
+span,label{
+	display:inline-block;
+	vertical-align: top;
+}
+p{
+	border:2px solid #fff;
+	-webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;	
+	margin:5px;
+	padding:10px;
+	background-color:#eee;
+	position:relative;
+	
+}
+input{}
+ 
+#outPutDoc{
+		background-color:#ccc;
+		font-family:monospace;
+		height:300px;
+		overflow:auto;
+		width:400px;
+}
+ 
+.button{
+	color:#000;
+	text-decoration:none;
+	background-color:#ccc;
+	padding:5px 20px;
+	
+	-webkit-border-radius: 0 20px 20px 0;
+	-moz-border-radius: 0 20px 20px 0;
+	border-radius: 0 20px 20px 0;
+	padding-right: 15px;	
+	
+	text-decoration:none;
+	
+	white-space:nowrap;
+	
+	font-weight: bold;
+    font-family: arial;
+	
+	border-left:5px solid transparent;
+	
+	box-sizing: border-box;
+}
+
+.button:hover{
+	background-color:#ddd;
+}
+.button:focus{
+	border-left-color:#000;
+}
+.bred{
+	background-color: #d24c4c;
+	color: #F8F3C1;
+}
+ 
+.bred:hover{
+	background-color: #e18181;
+}
+ 
+.bgreen{
+	background-color: #9AD39E;
+	color: #000;	
+}
+ 
+.bgreen:hover{
+	background-color: #B1EDB5;
+}
+ 
+ 
+#outputcanvas{
+	display:block;
+	max-width:100%;
+	max-height:600px;
+	/*border:1px solid black;*/
+}
+ 
+.unsichtbar{display:none;}
+ 
+#input_Width,
+#input_Height{
+	width:60px;
+ 
+}
+.inputW60{
+	width:60px;
+}
+.labeltext1{
+	min-width:140px;	
+}
+.labeltext2{
+	padding-left:5px;	
+}
+
+p:after{
+	position:absolute;
+	top:5px;
+	right:10px;	
+	color:#b4b4b4;
+}
+@media screen and (max-width: 810px){
+	p:after{display:none;}
+}
+
+#p_file:after{
+	content:"Quelle";
+}
+#setdaten:after{
+	content:"Optionen";
+}
+#p_makebutt:after{
+	content:"Aktion";
+}
+#p_outputcanvas:after{
+	content:"Bild";
+}
+#p_outPutDoc:after{
+	content:"gcode";
+}
+
