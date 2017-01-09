@@ -328,10 +328,10 @@ var akPicToLaser=function(zielID){
 		cE(p,"br");
 		cE(p,"span",'','labeltext1',"Gravy calculation according to:");
 		createRadioBox(p,"graucalfunc",[
-			{value:"GF"	,text:"Helligkeit",checked:true},
-			{value:"KR"	,text:"Kanal Rot"},
-			{value:"KG"	,text:"Kanal Grün"},
-			{value:"KB"	,text:"Kanal Blau"},
+			{value:"GF"	,text:"brightness",checked:true},
+			{value:"KR"	,text:"Channel red"},
+			{value:"KG"	,text:"Channel green"},
+			{value:"KB"	,text:"Channel blue"},
 			{value:"KRGB"	,text:"(rgb)/3"}
 			],
 			function(val){objektdata.graufunc=val;setNewSize();}
@@ -340,32 +340,32 @@ var akPicToLaser=function(zielID){
 		cE(p,"br");		
 		outputcanvas=cE(p,"canvas","outputcanvas");
 		
-		input_showzielsize=createCeckBox(p,"in Zielgröße anzeigen (Beta)",false);
+		input_showzielsize=createCeckBox(p,"In target size",false);
 		input_showzielsize.onchange=function(){
 			showZielsize(this.checked);
 		}
 		
-		p=cE(ziel,"p","p_makebutt","unsichtbar");
-		makeButt=cE(p,"a","makeButt","button bgreen unsichtbar","konvertiere");
+		p=cE(ziel,"p","p_makebutt","invisible");
+		makeButt=cE(p,"a","makeButt","Button green invisible","Convert");
 		makeButt.href="#";
 		makeButt.onclick=function(){ konvertiere(); return false;}
 		
-		pauseButt=cE(p,"a","pauseButt","button bred unsichtbar","stopp");
+		pauseButt=cE(p,"a","pauseButt","Buttonbrad invisible","stop");
 		pauseButt.href="#";
 		pauseButt.onclick=function(){ 
 			objektdata.stopconvert=true;
-			addClass(pauseButt,"unsichtbar"); 
-			subClass(makeButt,"unsichtbar");
+			addClass(pauseButt,"invisible"); 
+			subClass(makeButt,"invisible");
 			return false;}
 		
 		
-		p=cE(ziel,"p","p_outPutDoc","unsichtbar");
-		outPutDoc=cE(p,"textarea","outPutDoc","unsichtbar");
+		p=cE(ziel,"p","p_outPutDoc","invisible");
+		outPutDoc=cE(p,"textarea","outPutDoc","invisible");
 	}
 	
 	var showZielsize=function(an){
-		var dpi=75; //objektdata.dpi
-		var w=(maF(objektdata.width) *dpi/2.54/10) *10/7.9;//10/7.9 = korrektur
+		var dpi=75; 
+		var w=(maF(objektdata.width) *dpi/2.54/10) *10/7.9;//10/7.9 = correction
 		if(an){
 			outputcanvas.style.width= w+"px";
 		}
@@ -380,7 +380,7 @@ var akPicToLaser=function(zielID){
  
 	var prework=function(){
 		var c;
-		var dpi=objektdata.dpi;//Punkte pro Zoll = 2,54cm
+		var dpi=objektdata.dpi;//Points per inch = 2,54cm
 	
  		objektdata.width	=this.width /dpi*2.54*10;
 		objektdata.height	=this.height/dpi*2.54*10;
@@ -389,9 +389,9 @@ var akPicToLaser=function(zielID){
 		input_Height.setvalue(maF(objektdata.height));
 		input_DPI.setvalue(objektdata.dpi);
 			
-		subClass(gE("setdaten"),"unsichtbar");		
-		subClass(gE("p_outputcanvas"),"unsichtbar");
-		subClass(gE("p_makebutt"),"unsichtbar");
+		subClass(gE("setdaten"),"invisible");		
+		subClass(gE("p_outputcanvas"),"invisible");
+		subClass(gE("p_makebutt"),"invisible");
 				
 		
 		preWorkPicture();
@@ -405,8 +405,8 @@ var akPicToLaser=function(zielID){
 		
 		preWorkPicture();
 		
-		subClass(makeButt,"unsichtbar");
-		addClass(pauseButt,"unsichtbar");
+		subClass(makeButt,"invisible");
+		addClass(pauseButt,"invisible");
 		
 		showZielsize(input_showzielsize.checked);
 	}
@@ -414,10 +414,10 @@ var akPicToLaser=function(zielID){
 
 	var preWorkPicture=function(){		
 		var c,cc,bb,hh,imgd,pix,v,r,g,b,alpha,d,x,y,e,gg;
-		var dpi=objektdata.dpi;//Punkte pro Zoll = 2,54cm
+		var dpi=objektdata.dpi;//Points per inch = 2,54cm
  
 		var inputimage=gE("inputimage");
-		//Ausgangsbild auf Zielgröße bringen und in outputcanvas zwischenspeichern
+		//Set output image to target size and cached in outputcanvas
 		c=outputcanvas;
 		c.width =maR(objektdata.width*dpi/2.54/10);
 		c.height=maR(objektdata.height*dpi/2.54/10);
@@ -430,7 +430,7 @@ var akPicToLaser=function(zielID){
 		imgd=cc.getImageData(0,0,c.width,c.height);
 		pix=imgd.data;
  
-		//outputcanvas in Graustufen wandeln
+		//Output canvas in gray scale
 		for(y=0;y<c.height;y++)
 			for(x=0;x<c.width;x++){
 				d=(x*4)+(y)*c.width*4;
@@ -439,7 +439,7 @@ var akPicToLaser=function(zielID){
 				g=pix[d+1];
 				b=pix[d+2];
 				
-				if(objektdata.Graustufen<255){//auf xx Stufen rastern
+				if(objektdata.Graustufen<255){// raster to xx steps
 					gg=255/objektdata.Graustufen;
 					r=Math.min ( Math.round(Math.round( r/gg )*gg) ,255 );
 					g=Math.min ( Math.round(Math.round( g/gg )*gg) ,255 );
@@ -469,11 +469,11 @@ var akPicToLaser=function(zielID){
 						break;
 						
 					default:
-						v=Math.round(r*0.299+g*0.587+b*0.114);	// nach helligkeit
+						v=Math.round(r*0.299+g*0.587+b*0.114);	// by brightness
 					
 				}
 				
-				if(alpha<255){//transparente stellen(gif,png) mit weiß füllen
+				if(alpha<255){// fill transparent areas (gif, png) with white
 					alpha=255; 
 					pix[d+3]=alpha;
 					if(v==0)v=255;
@@ -481,7 +481,7 @@ var akPicToLaser=function(zielID){
 					
 				if(v>objektdata.minGrau)v=255;
 				
-				pix[d+0]=v;//alle Farbkanäle mit grauwert befüllen
+				pix[d+0]=v;// Fill all color channels with gray value
 				pix[d+1]=v;
 				pix[d+2]=v;
 				
@@ -539,7 +539,7 @@ var akPicToLaser=function(zielID){
 		outPutDoc.innerHTML+="G21 ;Set Units to Millimeters\n";// 
 				
 		if(objektdata.timer!=undefined)window.clearTimeout(objektdata.timer);
-		objektdata.timer=window.setTimeout(konvertiereF,10);//Zeilen per Timer durchgehen um Script-Blockierung zu verhindern
+		objektdata.timer=window.setTimeout(konvertiereF,10);// Go through a timer to prevent script blocking
 	};
  
 	var calcDauerData={x:0,y:0};
