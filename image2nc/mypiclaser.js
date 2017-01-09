@@ -1,18 +1,19 @@
-/*
-	Berechnet aus JPEG, GIF, PNG Bilden gcode zum Laser-gravieren
-	Auflösung: 75 dpi -> Zeilen sind erkennbar 
 
-	optimal Speed F1000 und 8% Laserstärke
-	
-	Testen ob weniger Speed und Laserstärke geht (F500 & 4% ?)
-	
-	y-Versprung im Gerät umgehen -->yspezialmove
-	
-	150dpi testen (OK @500mm/s)
-	150dpi testen (OK @800mm/s)
-	300dpi testen (OK @500mm/s)
-	300dpi testen (OK @800mm/s)
+/*
+Calculated from JPEG, GIF, PNG Form gcode for laser engraving
+Resolution: 75 dpi -> Lines are recognizable
+Optimal speed F1000 and 8% laser strength
+
+Test whether less speed and laser strength goes (F500 & 4%?)
+
+Y-jump in the device -> yspezialmove
+
+150dpi test (OK @ 500mm / s)
+Test 150dpi (OK @ 800mm / s)
+Test 300dpi (OK @ 500mm / s)
+Test 300dpi (OK @ 800mm / s)
 */
+
 
 
 var akPicToLaser=function(zielID){
@@ -71,7 +72,7 @@ var akPicToLaser=function(zielID){
 		}		
 		return false;
 	}
-	var maF=function(r){return Math.floor(r*100)/100;} //runden mit 2 nachkommastellen
+	var maF=function(r){return Math.floor(r*100)/100;} // Round with 2 decimal places
 	var maR=function(r){return Math.round(r);}
  
 	//--var--
@@ -95,13 +96,13 @@ var akPicToLaser=function(zielID){
 		feedratemax:2400,
 		feedrateburn:500,		//max:2400  800@8% 1000@8%
 		feedratemove:500,
-		minGrau:200,			//0..255  alles unter minGrau wird zu 0 (nicht lasern)
-		Graustufen:7,			//0..255  feine Unterschiede evtl. nicht sichbar, daher reduzieren (rastern)
+		minGrau:200,			//0..255  Everything under minGrau becomes 0 (not lasern)
+		Graustufen:7,			//0..255  Fine differences may not be visible, therefore reduce (raster)
 		width:1,				//mm
 		height:1,
 		unit:"mm",
-		Dlaser:0.125,			//Laserdurchmesser in mm  --> minimaler Zeilenabstand -->max 203,2dpi, sonst Überlappung
-		dpi:150,				 //Punkte pro Zoll = Punkte pro 2,54cm
+		Dlaser:0.125,			//Laser diameter in mm -> minimum line spacing -> max 203.2dpi, otherwise overlap
+		dpi:150,				 //Points per inch = points per 2.54cm
 		
 		yspezialmove:true,
 		timekorr:2.0,			//TODO: /---\
@@ -178,11 +179,11 @@ var akPicToLaser=function(zielID){
 			this.valueview.innerHTML=this.value;
 		}
 		
-		input.addEventListener("change", ocf);//Werteanzeige aktualisieren
+		input.addEventListener("change", ocf);//Update the value display
 		input.addEventListener("click", ocf);
 		input.addEventListener("keyup", ocf);
 		
-		//input.onchange=function(){};//frei für Userfunctionen
+		//input.onchange=function(){};//Free for user functions
 			
 		
 		var htmlnode=cE(ziel,'label');
@@ -229,7 +230,7 @@ var akPicToLaser=function(zielID){
 			input.id="RB_"+name+i;
 			input.radios=radios;
 			if(r.checked!=undefined)input.checked=r.checked;
-			input.addEventListener("change", ocf);//Werteanzeige aktualisieren
+			input.addEventListener("change", ocf); //Update value display
 			
 			if(r.text!=undefined){
 				label=cE(ziel,'label');
@@ -246,7 +247,7 @@ var akPicToLaser=function(zielID){
 		var html,p,obj;
 		
 		p=cE(ziel,"p","p_file");
-		cE(p,"span",'','',"Bitte Datei wählen: ");
+		cE(p,"span",'','',"Please choose file: ");
 				
 		inputFile=cE(p,"input","inputFile");
 		inputFile.type="file";
@@ -254,11 +255,11 @@ var akPicToLaser=function(zielID){
 		inputFile.size="50";//MB
 		inputFile.onchange=handleFile;
 		
-		inputimage=cE(ziel,"img","inputimage","unsichtbar");
+		inputimage=cE(ziel,"img","inputimage","invisible");
 		inputimage.onload=prework;
 		
-		p=cE(ziel,"p","setdaten","unsichtbar");
-		cE(p,"span",'','',"Lasern in einer Größe von&nbsp;");
+		p=cE(ziel,"p","setdaten","invisible");
+		cE(p,"span",'','',"Lasers in a size of &nbsp;");
 		
 		input_Width=new createOInputNr(p,"input_Width",objektdata.width,1,500);
 				
@@ -266,7 +267,7 @@ var akPicToLaser=function(zielID){
 		
 		input_Height=new createOInputNr(p,"input_Height",objektdata.height,1,500);
 											
-		cE(p,"span",'','',"&nbsp;(Breite * Höhe in "+objektdata.unit+")&nbsp;")
+		cE(p,"span",'','',"& Nbsp; (width * height in"+objektdata.unit+")&nbsp;")
 		
 		html=cE(p,"a",undefined,"button","set new size");
 		html.href="#";
@@ -290,22 +291,22 @@ var akPicToLaser=function(zielID){
 		
 		cE(p,"br");
 		
-		cE(p,"span",'','labeltext1',"Auflösung:");
+		cE(p,"span",'','labeltext1',"Resolution:");
 		input_DPI=new createOInputNr(p,"input_dpi",objektdata.dpi,1,600);
 		input_DPI.setclass("inputW60");
 		input_DPI.setisInt(true);
 		cE(p,"span",'','labeltext2',"dpi");
 		
 		
-		p=cE(ziel,"p","p_outputcanvas","unsichtbar");
-		html=createCeckBox(p,"invertieren",objektdata.invertieren);
+		p=cE(ziel,"p","p_outputcanvas","invisible");
+		html=createCeckBox(p,"inverted",objektdata.invertieren);
 		html.onchange=function(){
 			 objektdata.invertieren=this.checked;
 			 setNewSize();
 		}
 		
 		cE(p,"br");
-		html=createSlider(p,"minimaler Grauton: ",0,255,1,objektdata.minGrau);
+		html=createSlider(p,"Minimal gray tone:",0,255,1,objektdata.minGrau);
 		html.onchange=function(e){
 			objektdata.minGrau=this.value;
 			setNewSize();
@@ -315,7 +316,7 @@ var akPicToLaser=function(zielID){
 			setNewSize();
 		}
 		cE(p,"br");
-		html=createSlider(p,"Graustufen (fein): ",1,255,1,objektdata.Graustufen);
+		html=createSlider(p,"Grayscale (fine):",1,255,1,objektdata.Graustufen);
 		html.onchange=function(e){
 			objektdata.Graustufen=this.value;
 			setNewSize();
@@ -325,7 +326,7 @@ var akPicToLaser=function(zielID){
 			setNewSize();
 		}
 		cE(p,"br");
-		cE(p,"span",'','labeltext1',"Grauumrechnung nach:");
+		cE(p,"span",'','labeltext1',"Gravy calculation according to:");
 		createRadioBox(p,"graucalfunc",[
 			{value:"GF"	,text:"Helligkeit",checked:true},
 			{value:"KR"	,text:"Kanal Rot"},
