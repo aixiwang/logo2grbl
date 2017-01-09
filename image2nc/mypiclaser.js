@@ -267,7 +267,7 @@ var akPicToLaser=function(zielID){
 		
 		input_Height=new createOInputNr(p,"input_Height",objektdata.height,1,500);
 											
-		cE(p,"span",'','',"& Nbsp; (width * height in"+objektdata.unit+")&nbsp;")
+		cE(p,"span",'','',"&nbsp; (width * height in"+objektdata.unit+")&nbsp;")
 		
 		html=cE(p,"a",undefined,"button","set new size");
 		html.href="#";
