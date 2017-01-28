@@ -63,6 +63,8 @@ class BMPy():
         self.bitmap = []
         for y in range (0,self.height):
             self.bitmap.append([])
+            
+            #print 'y:',y
             #print self.bitmap
             #raw_input('====')
             #print 'bitmap len:',len(self.bitmap)
@@ -76,14 +78,14 @@ class BMPy():
                 self.bitmap[y].append((r, g, b))
             off += padding
         # Aixi fixed
-        self.bitmap.reverse()
+        #self.bitmap.reverse()
         #print 'bitmap len 2:',len(self.bitmap)
     def save_to(self, filename):
         '''Export the bmp saving the changes done to the bitmap'''
 
         raw_copy = StringIO.StringIO()
-        bitmap = self.bitmap[::-1]
-
+        #bitmap = self.bitmap[::-1]
+        bitmap = self.bitmap
         width_bytes = self.width*(self.bpp/8)
         rowstride = ceil(width_bytes/4.0)*4
         padding = int(rowstride - width_bytes)
@@ -100,6 +102,7 @@ class BMPy():
         # After the new width and height the header it's the same
         raw_copy.write(self.raw_data[HEIGHT_OFFSET+4:self.data_offset])
 
+        
         for y in xrange(self.height):
             for x in xrange(self.width):
                 r, g, b = bitmap[y][x]

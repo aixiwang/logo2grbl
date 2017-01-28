@@ -12,7 +12,7 @@ z_safe_height = 3
 # -5mm
 z_drill_height = -3
 # > jump_distance, move to high, move to target position, then start to drill 
-jump_distance = 1
+jump_distance = 0.1
     
 
 #------------------------------
@@ -109,7 +109,7 @@ if __name__ == "__main__":
     
     for y in xrange(bmp.height):
         for x in xrange(bmp.width):
-            (r,b,g) = bmp.bitmap[bmp.height-1-y][x]
+            (r,b,g) = bmp.bitmap[y][x]
             if r < 128:
                 d = distance_p2p(x,y,last_x_pt,last_y_pt,mm_per_pt)
                 #print 'd:',d
